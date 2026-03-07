@@ -223,6 +223,8 @@
 </div>
 
 <script>
+function saveData(){try{localStorage.setItem("kb_tx",JSON.stringify(transactions));localStorage.setItem("kb_bd",JSON.stringify(budgets));localStorage.setItem("kb_ct",String(idCounter));}catch(e){}}
+function loadData(){try{var tx=localStorage.getItem("kb_tx");var bd=localStorage.getItem("kb_bd");var ct=localStorage.getItem("kb_ct");if(tx)transactions=JSON.parse(tx);if(bd)budgets=JSON.parse(bd);if(ct)idCounter=parseInt(ct,10);}catch(e){}}
 var transactions = [];
 var budgets = {};
 var currentType = 'income';
@@ -230,6 +232,7 @@ var currentPayMethod = 'card';
 var currentFilter = 'all';
 var currentYear, currentMonth;
 var idCounter = 1;
+loadData();
 
 var CAT_COLORS = {'식비':'#8A9E85','교통':'#C9A96E','쇼핑':'#C4714A','의료':'#A0B8C8','교육':'#B8A0C8','문화':'#C8B8A0','급여':'#7AB88A','용돈':'#C8A07A','기타':'#B0A898'};
 
@@ -312,6 +315,7 @@ document.getElementById('tx-list').addEventListener('click', function(e){
   if(!btn) return;
   var id = parseInt(btn.getAttribute('data-id'), 10);
   transactions = transactions.filter(function(tx){ return tx.id !== id; });
+  saveData();
   render();
 });
 
@@ -394,6 +398,7 @@ document.getElementById('add-tx-btn').addEventListener('click', function(){
   var tx = { id: idCounter++, type: currentType, date: date, amount: amount, category: cat, desc: desc };
   if(currentType==='expense') tx.payMethod = currentPayMethod;
   transactions.push(tx);
+  saveData();
   document.getElementById('tx-amount').value = '';
   document.getElementById('tx-desc').value   = '';
   render();
@@ -404,6 +409,7 @@ document.getElementById('budget-set-btn').addEventListener('click', function(){
   var amt = parseFloat(document.getElementById('budget-amt').value);
   if(!amt||amt<=0){ alert('예산 금액을 입력해주세요!'); return; }
   budgets[cat]=amt;
+  saveData();
   document.getElementById('budget-amt').value='';
   renderBudget(getMonthTx());
 });
